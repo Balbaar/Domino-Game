@@ -1,6 +1,7 @@
 package Object.Domino;
 
 import Object.GameObject;
+import Util.SoundPlayer;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -14,8 +15,17 @@ public class Domino extends GameObject {
     private int upValue;
     private int downValue;
 
-    BufferedImage image;
+    //General info about the domino
+    private int sumValue;
+    private boolean isDouble;
+    private boolean hasBlank;
+
+    BufferedImage viewImage;
+    BufferedImage realImage;
+
     ArrayList<BufferedImage> randomImages = new ArrayList<>();
+
+
 
     public Domino(int x, int y, int width, int height, int upValue, int downValue) {
         super(x, y, width, height);
@@ -23,19 +33,9 @@ public class Domino extends GameObject {
         this.upValue = upValue;
         this.downValue = downValue;
 
-        try {
-            image = ImageIO.read(getClass().getResourceAsStream("/domino/white/" + upValue + "_" + downValue + ".png"));
-            randomImages.add(ImageIO.read(getClass().getResourceAsStream("/domino/white/0_0.png")));
-            randomImages.add(ImageIO.read(getClass().getResourceAsStream("/domino/white/2_1.png")));
-            randomImages.add(ImageIO.read(getClass().getResourceAsStream("/domino/white/3_0.png")));
-            randomImages.add(ImageIO.read(getClass().getResourceAsStream("/domino/white/3_2.png")));
-            randomImages.add(ImageIO.read(getClass().getResourceAsStream("/domino/white/4_1.png")));
-            randomImages.add(ImageIO.read(getClass().getResourceAsStream("/domino/white/4_4.png")));
-            randomImages.add(ImageIO.read(getClass().getResourceAsStream("/domino/white/5_3.png")));
-            randomImages.add(ImageIO.read(getClass().getResourceAsStream("/domino/white/6_6.png")));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        setGeneralInfoValues();
+
+        loadImages(upValue, downValue);
     }
 
     public Domino(int x, int y, int width, int height) {
@@ -45,14 +45,81 @@ public class Domino extends GameObject {
         upValue = random.nextInt(7);
         downValue = random.nextInt(7);
 
-        if(upValue < downValue) {
-            int temp = upValue;
-            upValue = downValue;
-            downValue = temp;
-        }
+        setGeneralInfoValues();
 
+        loadImages(upValue, downValue);
+    }
+
+
+
+    public void update() {
+        doEffects();
+    }
+
+    public void draw(Graphics2D g) {
+        g.drawImage(viewImage, getX(), getY(), getWidth(), getHeight(), null);
+    }
+
+    private int originalX = getX();
+    private int originalY = getY();
+    private BufferedImage originalImage;
+    private void doEffects() {
+        if(shakeEffect) {
+            doShakeEffect();
+        }
+        if(liftUpEffect) {
+            doLiftUpEffect();
+        }
+        if(liftDownEffect) {
+            doLiftDownEffect();
+        }
+    }
+
+    private void doShakeEffect() {
+        if (this.shakeDuration > 0) {
+            int shakeAmount = 10;
+            int shakeX = (int) (Math.random() * shakeAmount - shakeAmount / 2);
+            int shakeY = (int) (Math.random() * shakeAmount - shakeAmount / 2);
+            setX(originalX + shakeX);
+            setY(originalY + shakeY);
+            if(shakeDuration % 5 == 0) viewImage = randomImages.get((int) (Math.random() * randomImages.size()));
+            shakeDuration--;
+        } else {
+            setX(originalX);
+            setY(originalY);
+            viewImage = realImage;
+            shakeEffect = false;
+        }
+    }
+
+    private void setGeneralInfoValues() {
+        this.sumValue = upValue + downValue;
+        if(upValue == downValue) isDouble = true;
+        if(upValue == 0 || downValue == 0) hasBlank = true;
+    }
+
+    private void doLiftUpEffect() {
+        if (this.liftUpDuration > 0) {
+            setY(getY() - 2);
+            liftUpDuration--;
+        } else {
+            liftUpEffect = false;
+        }
+    }
+
+    private void doLiftDownEffect() {
+        if (this.liftDownDuration > 0) {
+            setY(getY() + 1);
+            liftDownDuration--;
+        } else {
+            liftDownEffect = false;
+            setY(originalY);
+        }
+    }
+
+    private void loadImages(int upValue, int downValue) {
         try {
-            image = ImageIO.read(getClass().getResourceAsStream("/domino/white/" + upValue + "_" + downValue + ".png"));
+            realImage = ImageIO.read(getClass().getResourceAsStream("/domino/white/" + upValue + "_" + downValue + ".png"));
             randomImages.add(ImageIO.read(getClass().getResourceAsStream("/domino/white/0_0.png")));
             randomImages.add(ImageIO.read(getClass().getResourceAsStream("/domino/white/2_1.png")));
             randomImages.add(ImageIO.read(getClass().getResourceAsStream("/domino/white/3_0.png")));
@@ -64,16 +131,16 @@ public class Domino extends GameObject {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
     }
 
     public void setUpValue(int upValue) {
         this.upValue = upValue;
+        sumValue = upValue + downValue;
     }
 
     public void setDownValue(int downValue) {
         this.downValue = downValue;
+        sumValue = upValue + downValue;
     }
 
     public int getUpValue() {
@@ -84,32 +151,11 @@ public class Domino extends GameObject {
         return downValue;
     }
 
-    private int shakeDuration = 60;
-    private int originalX = getX();
-    private int originalY = getY();
-    private BufferedImage originalImage;
-    public void update() {
-        originalImage = image;
-        if (shakeDuration > 0) {
-            int shakeAmount = 10;
-            int shakeX = (int) (Math.random() * shakeAmount - shakeAmount / 2);
-            int shakeY = (int) (Math.random() * shakeAmount - shakeAmount / 2);
-            setX(originalX + shakeX);
-            setY(originalY + shakeY);
-            if(shakeDuration % 5 == 0) image = randomImages.get((int) (Math.random() * randomImages.size()));
-            shakeDuration--;
-        } else {
-            setX(originalX);
-            setY(originalY);
-            image = originalImage;
-        }
-
-
+    public int getSumValue() {
+        return sumValue;
     }
 
-    public void draw(Graphics2D g) {
-        g.drawImage(image, getX(), getY(), getWidth(), getHeight(), null);
-    }
+
 
 
 

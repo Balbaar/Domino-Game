@@ -6,9 +6,8 @@ import java.util.Random;
 public class DominoManager {
 
     private Domino[][] board;
-    private final int rows = 3;
-    private final int cols = 5;
-    private final Random random = new Random();
+    private final int rows = 2;
+    private final int cols = 3;
 
     private final int x;
     private final int y;
@@ -67,11 +66,31 @@ public class DominoManager {
         board[row][col] = domino;
     }
 
+    public Domino[] getAllDominos() {
+        Domino[] dominos = new Domino[rows * cols];
+        int index = 0;
+        for(int i = 0; i < rows; i++) {
+            for(int j = 0; j < cols; j++) {
+                dominos[index] = board[i][j];
+                index++;
+            }
+        }
+        return dominos;
+    }
+
     public void updateDominos() {
         for(int i = 0; i < rows; i++) {
             for(int j = 0; j < cols; j++) {
                 board[i][j].update();
             }
+        }
+    }
+
+    public void playEffect(Domino domino, String effect) {
+        switch (effect) {
+            case "shake":
+                domino.playShakeEffect();
+                break;
         }
     }
 }

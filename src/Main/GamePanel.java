@@ -1,5 +1,7 @@
 package Main;
 
+import Components.Sidepanel.SidePanel;
+import Object.Domino.Domino;
 import Object.GameObject;
 import Components.GameButton;
 import Object.Domino.DominoManager;
@@ -12,6 +14,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class GamePanel extends JPanel implements Runnable {
 
@@ -24,11 +27,14 @@ public class GamePanel extends JPanel implements Runnable {
 
     DominoManager dominoManager;
     GameButton rollButton;
+    SidePanel sidePanel;
 
     MouseEventHandler mouseEventHandler;
 
     SoundPlayer clonkSound = new SoundPlayer("/sounds/clonk.wav");
 
+    //Events used in calculating score.
+    ArrayList<Event> events = new ArrayList<>();
 
     public GamePanel() {
         screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -48,7 +54,7 @@ public class GamePanel extends JPanel implements Runnable {
         //Objects on screen
         dominoManager = new DominoManager((int) screenSize.getWidth(), (int)screenSize.getHeight(), tileSize);
         rollButton = new GameButton((int) screenSize.getWidth(), (int)screenSize.getHeight(), tileSize);
-
+        sidePanel = new SidePanel(tileSize, (int) screenSize.getHeight());
 
 
         mouseEventHandler = new MouseEventHandler();
@@ -87,17 +93,70 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     private boolean canRoll = true;
+    private boolean rollInProgress = false;
     public void update() {
-        if(isPressed(rollButton) && canRoll) {
+        if(isPressed(rollButton) && canRoll && !Arrays.stream(dominoManager.getAllDominos()).allMatch(GameObject::getShakeEffect)) {
+            rollInProgress = true;
             clonkSound.play();
             dominoManager.rollBoard();
+            for(Domino d: dominoManager.getAllDominos()) {
+                d.playShakeEffect();
+            }
             canRoll = false;
-        } else if(!isPressed(rollButton)) {
-            canRoll = true;
+            addBasicEventAllDominos();
         }
 
         dominoManager.updateDominos();
+        sidePanel.update();
+
+        if(rollInProgress) {
+            calculateScore();
+        }
+
     }
+
+    /*Add all dominos to the events list with their sum value as score. Always happens first in all rolls*/
+    private void addBasicEventAllDominos() {
+        for(Domino d: dominoManager.getAllDominos()) {
+            events.add(new Event(d, d.getSumValue(), 10));
+        }
+    }
+
+
+    private int duration = 0;
+    private void calculateScore() {
+        /*
+        * Events list is a list containing all events that should occur during score calculation.
+        * Trigger one event at a time and apply playLiftUpEffect on the domino passed in each event.
+        * When all events are triggered, set rollInProgress to false and canRoll to true.
+        */
+
+        //If any of the dominos are still shaking, wait until they are done.
+        if(Arrays.stream(dominoManager.getAllDominos()).anyMatch(GameObject::getShakeEffect)) return;
+
+        if(duration == 0) {
+            if(events.size() == 0) {
+                rollInProgress = false;
+                canRoll = true;
+                duration = 0;
+                for(Domino d: dominoManager.getAllDominos()) {
+                    d.playLiftDownEffect();
+                }
+                return;
+            }
+            Event e = events.get(0);
+            e.domino.playLiftUpEffect();
+            sidePanel.getScorePanel().addScore(events.get(0).score);
+            events.remove(0);
+            duration = e.duration;
+        } else {
+            duration--;
+        }
+
+
+    }
+
+
 
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -107,6 +166,7 @@ public class GamePanel extends JPanel implements Runnable {
         g2d.drawImage(background, 0, 0, (int) screenSize.getWidth(), (int) screenSize.getHeight(), null); // Draw background
         dominoManager.draw(g2d); // Draw dominoes
         rollButton.draw(g2d); // Draw button
+        sidePanel.draw(g2d); // Draw side panel
 
         //Retro overlay effect
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -133,7 +193,7 @@ public class GamePanel extends JPanel implements Runnable {
         RadialGradientPaint gradient = new RadialGradientPaint(
                 width / 2f, height / 2f, Math.max(width, height) / 2f,
                 new float[]{0f, 1f},
-                new Color[]{new Color(255, 255, 255, 50), new Color(0, 0, 0, 200)}
+                new Color[]{new Color(255, 255, 255, 50), new Color(0, 0, 0, 140)}
         );
         g2d.setPaint(gradient);
         g2d.fillRect(0, 0, width, height);
@@ -141,6 +201,19 @@ public class GamePanel extends JPanel implements Runnable {
 
     public boolean isPressed(GameButton obj) {
         return mouseEventHandler.leftPressed && obj.intersects(mouseEventHandler.mouseX, mouseEventHandler.mouseY);
+    }
+
+
+    private class Event {
+        private final Domino domino; //Domino effected by the event
+        private final int score; //Score added by the event
+        private final int duration; //Duration of the event
+
+        public Event(Domino domino, int score, int duration) {
+            this.domino = domino;
+            this.score = score;
+            this.duration = duration;
+        }
 
     }
 
