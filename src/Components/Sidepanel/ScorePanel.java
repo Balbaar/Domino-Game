@@ -12,7 +12,7 @@ public class ScorePanel extends GameObject {
     private int score = 0;
     private int viewScore = 0;
 
-    public ScorePanel(int tileSize, int width, int height) {
+    public ScorePanel(int width, int height, int tileSize ) {
         super(tileSize, tileSize, tileSize * 4, tileSize * 2);
     }
 

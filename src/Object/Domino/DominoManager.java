@@ -6,8 +6,8 @@ import java.util.Random;
 public class DominoManager {
 
     private Domino[][] board;
-    private final int rows = 2;
-    private final int cols = 3;
+    private final int rows = 3;
+    private final int cols = 5;
 
     private final int x;
     private final int y;

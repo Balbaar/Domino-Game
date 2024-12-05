@@ -11,6 +11,9 @@ public class GameObject {
     private int x;
     private int y;
 
+    private int viewX;
+    private int viewY;
+
     private BufferedImage image;
 
     //Effects
@@ -23,21 +26,53 @@ public class GameObject {
     public boolean liftDownEffect = false;
     public int liftDownDuration = 20;
 
+    public boolean hoverEffect = false;
+    public boolean isHovered = false;
+    public int hoverDuration = 20;
+    public int hoverHeight = 10;
+
     SoundPlayer whooshSound = new SoundPlayer("/sounds/clonk.wav");
 
     public GameObject(int x, int y, int width, int height) {
         this.x = x;
+        this.viewX = x;
         this.y = y;
+        this.viewY = y;
         this.size = new Dimension(width, height);
     }
 
     public void update() {
+        if(viewX < x) {
+            viewX += Math.max(1, (x - viewX) / 10);
+        } else if(viewX > x) {
+            viewX -= Math.max(1, (viewX - x) / 10);
+        }
+
+        if(viewY < y) {
+            viewY += Math.max(1, (y - viewY) / 10);
+        } else if(viewY > y) {
+            viewY -= Math.max(1, (viewY - y) / 10);
+        }
+
+        if(hoverEffect) {
+            if(!isHovered) {
+                isHovered = true;
+                playLiftUpEffect(hoverDuration);
+            }
+            if(isHovered) hoverDuration--;
+            if(hoverDuration <= 0) {
+                isHovered = false;
+                hoverEffect = false;
+                playLiftDownEffect(hoverHeight);
+            }
+        }
+
 
     }
 
     public void draw(Graphics2D g) {
         g.setColor(Color.white);
-        g.fillRect(x, y, size.width, size.height);
+        g.fillRect(viewX, viewY, size.width, size.height);
     }
 
     public int getX() {
@@ -46,6 +81,14 @@ public class GameObject {
 
     public int getY() {
         return y;
+    }
+
+    public int getViewX() {
+        return viewX;
+    }
+
+    public int getViewY() {
+        return viewY;
     }
 
     public void setX(int x) {
@@ -75,11 +118,9 @@ public class GameObject {
     }
 
 
-    public void playLiftUpEffect() {
-        liftUpDuration = 10;
-        liftUpEffect = true;
-        whooshSound.play();
-        System.out.println("Lift up effect" + this);
+    public void playLiftUpEffect(int height) {
+        setY(getY() - height);
+        System.out.println("Lift up effect");
     }
 
     public boolean getLiftUpEffect() {
@@ -87,13 +128,20 @@ public class GameObject {
     }
 
 
-    public void playLiftDownEffect() {
-        liftUpDuration = 10;
-        liftDownEffect = true;
+    public void playLiftDownEffect(int height) {
+        setY(getY() + height);
+        System.out.println("Lift down effect");
     }
 
     public boolean getLiftDownEffect() {
         return liftDownEffect;
+    }
+
+    public void playHoverEffect(int height, int duration) {
+        hoverEffect = true;
+        hoverHeight = height;
+        hoverDuration = duration;
+        whooshSound.play();
     }
 
 

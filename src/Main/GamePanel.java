@@ -54,8 +54,7 @@ public class GamePanel extends JPanel implements Runnable {
         //Objects on screen
         dominoManager = new DominoManager((int) screenSize.getWidth(), (int)screenSize.getHeight(), tileSize);
         rollButton = new GameButton((int) screenSize.getWidth(), (int)screenSize.getHeight(), tileSize);
-        sidePanel = new SidePanel(tileSize, (int) screenSize.getHeight());
-
+        sidePanel = new SidePanel((int) screenSize.getHeight(), tileSize);
 
         mouseEventHandler = new MouseEventHandler();
         this.addMouseListener(mouseEventHandler);
@@ -118,6 +117,7 @@ public class GamePanel extends JPanel implements Runnable {
     /*Add all dominos to the events list with their sum value as score. Always happens first in all rolls*/
     private void addBasicEventAllDominos() {
         for(Domino d: dominoManager.getAllDominos()) {
+            //TODO: If you have an item that changes the value of the domino, you should add the changed value instead of the sum value.
             events.add(new Event(d, d.getSumValue(), 10));
         }
     }
@@ -125,35 +125,25 @@ public class GamePanel extends JPanel implements Runnable {
 
     private int duration = 0;
     private void calculateScore() {
-        /*
-        * Events list is a list containing all events that should occur during score calculation.
-        * Trigger one event at a time and apply playLiftUpEffect on the domino passed in each event.
-        * When all events are triggered, set rollInProgress to false and canRoll to true.
-        */
+        // If any of the dominos are still shaking, wait until they are done.
+        if (Arrays.stream(dominoManager.getAllDominos()).anyMatch(GameObject::getShakeEffect)) return;
 
-        //If any of the dominos are still shaking, wait until they are done.
-        if(Arrays.stream(dominoManager.getAllDominos()).anyMatch(GameObject::getShakeEffect)) return;
-
-        if(duration == 0) {
-            if(events.size() == 0) {
+        if (duration == 0) {
+            if (events.size() == 0) {
                 rollInProgress = false;
                 canRoll = true;
                 duration = 0;
-                for(Domino d: dominoManager.getAllDominos()) {
-                    d.playLiftDownEffect();
-                }
                 return;
             }
             Event e = events.get(0);
-            e.domino.playLiftUpEffect();
-            sidePanel.getScorePanel().addScore(events.get(0).score);
+            //e.domino.playLiftUpEffect(30);
+            e.domino.playHoverEffect(15, 30);
+            sidePanel.getScorePanel().addScore(e.score);
             events.remove(0);
             duration = e.duration;
         } else {
             duration--;
         }
-
-
     }
 
 
@@ -208,6 +198,9 @@ public class GamePanel extends JPanel implements Runnable {
         private final Domino domino; //Domino effected by the event
         private final int score; //Score added by the event
         private final int duration; //Duration of the event
+
+        //TODO: Rework/Add event types. Example: Domino is lifted up, Domino is lifted down, Domino is shaking, Domino is removed, etc.
+        //TODO: Based on the event type, apply different effects to the domino.
 
         public Event(Domino domino, int score, int duration) {
             this.domino = domino;

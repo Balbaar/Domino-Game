@@ -53,27 +53,26 @@ public class Domino extends GameObject {
 
 
     public void update() {
+        super.update();
         doEffects();
     }
 
     public void draw(Graphics2D g) {
-        g.drawImage(viewImage, getX(), getY(), getWidth(), getHeight(), null);
+        g.drawImage(viewImage, getViewX(), getViewY(), getWidth(), getHeight(), null);
     }
 
     private int originalX = getX();
     private int originalY = getY();
     private BufferedImage originalImage;
+
     private void doEffects() {
         if(shakeEffect) {
             doShakeEffect();
         }
-        if(liftUpEffect) {
-            doLiftUpEffect();
-        }
-        if(liftDownEffect) {
-            doLiftDownEffect();
-        }
+
     }
+
+
 
     private void doShakeEffect() {
         if (this.shakeDuration > 0) {
@@ -98,24 +97,6 @@ public class Domino extends GameObject {
         if(upValue == 0 || downValue == 0) hasBlank = true;
     }
 
-    private void doLiftUpEffect() {
-        if (this.liftUpDuration > 0) {
-            setY(getY() - 2);
-            liftUpDuration--;
-        } else {
-            liftUpEffect = false;
-        }
-    }
-
-    private void doLiftDownEffect() {
-        if (this.liftDownDuration > 0) {
-            setY(getY() + 1);
-            liftDownDuration--;
-        } else {
-            liftDownEffect = false;
-            setY(originalY);
-        }
-    }
 
     private void loadImages(int upValue, int downValue) {
         try {

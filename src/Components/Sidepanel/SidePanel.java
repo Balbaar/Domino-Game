@@ -7,17 +7,21 @@ import java.awt.*;
 public class SidePanel extends GameObject {
 
     private ScorePanel scorePanel;
+    private ShopPanel shopPanel;
+
 
     private int width;
     private int height;
     private int tileSize;
 
-    public SidePanel(int tileSize, int screenHeight) {
+    public SidePanel(int screenHeight, int tileSize) {
         super(0, 0, tileSize * 6, screenHeight);
         this.tileSize = tileSize;
         this.width = tileSize * 6;
         this.height = screenHeight;
-        scorePanel = new ScorePanel(tileSize, tileSize*4, height);
+
+        scorePanel = new ScorePanel(tileSize*4, height, tileSize);
+        shopPanel = new ShopPanel(tileSize, tileSize*4, tileSize*4, tileSize*8);
     }
 
     public void draw(Graphics2D g2) {
@@ -28,6 +32,7 @@ public class SidePanel extends GameObject {
         g2.setColor(new Color(111, 57, 65, 255));
         g2.fillRect(getX() + tileSize, getY(), getWidth() - tileSize*2, getHeight());
         scorePanel.draw(g2);
+        shopPanel.draw(g2);
     }
 
     public void update() {
@@ -36,6 +41,10 @@ public class SidePanel extends GameObject {
 
     public ScorePanel getScorePanel() {
         return scorePanel;
+    }
+
+    public ShopPanel getShopPanel() {
+        return shopPanel;
     }
 
 }
