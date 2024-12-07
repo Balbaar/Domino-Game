@@ -21,7 +21,7 @@ public class SidePanel extends GameObject {
         this.height = screenHeight;
 
         scorePanel = new ScorePanel(tileSize*4, height, tileSize);
-        shopPanel = new ShopPanel(tileSize, tileSize*4, tileSize*4, tileSize*8);
+        shopPanel = new ShopPanel(tileSize, tileSize*4, tileSize*4, tileSize*8, tileSize);
     }
 
     public void draw(Graphics2D g2) {

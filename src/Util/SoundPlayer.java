@@ -3,9 +3,12 @@ package Util;
 import javax.sound.sampled.*;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SoundPlayer {
-
+    private static List<SoundPlayer> instances = new ArrayList<>();
+    private FloatControl volumeControl;
     private Clip clip;
 
     public SoundPlayer(String soundFileName) {
@@ -25,6 +28,8 @@ public class SoundPlayer {
             AudioInputStream decodedAudioInputStream = AudioSystem.getAudioInputStream(decodedFormat, audioInputStream);
             clip = AudioSystem.getClip();
             clip.open(decodedAudioInputStream);
+            volumeControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+            instances.add(this);
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
             e.printStackTrace();
         }
@@ -40,6 +45,14 @@ public class SoundPlayer {
     public void stop() {
         if (clip != null) {
             clip.stop();
+        }
+    }
+
+    public static void setVolume(float volume) {
+        for (SoundPlayer player : instances) {
+            if (player.volumeControl != null) {
+                player.volumeControl.setValue(volume);
+            }
         }
     }
 }

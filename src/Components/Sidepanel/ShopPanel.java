@@ -2,11 +2,21 @@ package Components.Sidepanel;
 
 import Object.GameObject;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 public class ShopPanel extends GameObject {
 
-    public ShopPanel(int x, int y, int width, int height) {
+    private int tileSize;
+
+    private BufferedImage shopTitleText;
+
+    private ArrayList<Item> allPossibleItems = new ArrayList<>();
+
+    public ShopPanel(int x, int y, int width, int height, int tileSize) {
         super(x, y, width, height);
+        this.tileSize = tileSize;
+        shopTitleText = loadImage("/shop/shop_title.png");
     }
 
     public void draw(Graphics2D g2) {
@@ -14,6 +24,7 @@ public class ShopPanel extends GameObject {
         //Draw background for sidepanel
         g2.setColor(new Color(13, 44, 94, 100));
         g2.fillRect(getX(), getY(), getWidth(), getHeight());
+        g2.drawImage(shopTitleText, getX(), getY(), getWidth(), tileSize, null);
     }
 
 

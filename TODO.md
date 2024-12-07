@@ -42,4 +42,5 @@ private class Item {
 - [ ] Based on the event type, apply different effects to the domino.
 
 ### Bugs
-- [ ] 
+- [ ] Fix SoundPlayer class to support other formats
+- [ ] Fix so SoundPlayer can change volume

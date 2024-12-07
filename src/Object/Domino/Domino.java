@@ -93,25 +93,25 @@ public class Domino extends GameObject {
 
     private void setGeneralInfoValues() {
         this.sumValue = upValue + downValue;
-        if(upValue == downValue) isDouble = true;
-        if(upValue == 0 || downValue == 0) hasBlank = true;
+        this.isDouble = (upValue == downValue);
+        this.hasBlank = (upValue == 0 || downValue == 0);
     }
 
 
     private void loadImages(int upValue, int downValue) {
-        try {
-            realImage = ImageIO.read(getClass().getResourceAsStream("/domino/white/" + upValue + "_" + downValue + ".png"));
-            randomImages.add(ImageIO.read(getClass().getResourceAsStream("/domino/white/0_0.png")));
-            randomImages.add(ImageIO.read(getClass().getResourceAsStream("/domino/white/2_1.png")));
-            randomImages.add(ImageIO.read(getClass().getResourceAsStream("/domino/white/3_0.png")));
-            randomImages.add(ImageIO.read(getClass().getResourceAsStream("/domino/white/3_2.png")));
-            randomImages.add(ImageIO.read(getClass().getResourceAsStream("/domino/white/4_1.png")));
-            randomImages.add(ImageIO.read(getClass().getResourceAsStream("/domino/white/4_4.png")));
-            randomImages.add(ImageIO.read(getClass().getResourceAsStream("/domino/white/5_3.png")));
-            randomImages.add(ImageIO.read(getClass().getResourceAsStream("/domino/white/6_6.png")));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        realImage = loadImage("/domino/white/" + upValue + "_" + downValue + ".png");
+        randomImages.add(loadImage("/domino/white/0_0.png"));
+        randomImages.add(loadImage("/domino/white/2_1.png"));
+        randomImages.add(loadImage("/domino/white/0_4.png"));
+        randomImages.add(loadImage("/domino/white/2_5.png"));
+        randomImages.add(loadImage("/domino/white/3_0.png"));
+        randomImages.add(loadImage("/domino/white/3_2.png"));
+        randomImages.add(loadImage("/domino/white/4_1.png"));
+        randomImages.add(loadImage("/domino/white/4_4.png"));
+        randomImages.add(loadImage("/domino/white/4_2.png"));
+        randomImages.add(loadImage("/domino/white/3_6.png"));
+        randomImages.add(loadImage("/domino/white/5_3.png"));
+        randomImages.add(loadImage("/domino/white/6_6.png"));
     }
 
     public void setUpValue(int upValue) {

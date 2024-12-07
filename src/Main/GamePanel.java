@@ -60,7 +60,6 @@ public class GamePanel extends JPanel implements Runnable {
         this.addMouseListener(mouseEventHandler);
         this.addMouseMotionListener(mouseEventHandler);
 
-
         startGameThread();
     }
 
@@ -137,7 +136,7 @@ public class GamePanel extends JPanel implements Runnable {
             }
             Event e = events.get(0);
             //e.domino.playLiftUpEffect(30);
-            e.domino.playHoverEffect(15, 30);
+            e.domino.playHoverEffect(20, 30);
             sidePanel.getScorePanel().addScore(e.score);
             events.remove(0);
             duration = e.duration;

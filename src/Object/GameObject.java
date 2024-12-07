@@ -2,8 +2,10 @@ package Object;
 
 import Util.SoundPlayer;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 public class GameObject {
     private Dimension size;
@@ -49,24 +51,29 @@ public class GameObject {
         }
 
         if(viewY < y) {
-            viewY += Math.max(1, (y - viewY) / 10);
+            viewY += Math.max(1, (y - viewY) / 5);
         } else if(viewY > y) {
-            viewY -= Math.max(1, (viewY - y) / 10);
+            viewY -= Math.max(1, (viewY - y) / 5);
         }
+
+        /*
+        * If hoverEffect is true. Lift the object up by calling function playLiftUpEffect once.
+        * Then lift it down by calling function playLiftDownEffect once after the duration of the lift up effect.
+        */
 
         if(hoverEffect) {
-            if(!isHovered) {
+            if(hoverDuration > 0 && !isHovered) {
+                playLiftUpEffect(hoverHeight);
                 isHovered = true;
-                playLiftUpEffect(hoverDuration);
+                hoverDuration--;
             }
-            if(isHovered) hoverDuration--;
-            if(hoverDuration <= 0) {
-                isHovered = false;
-                hoverEffect = false;
+            else if(hoverDuration == 0 && isHovered) {
                 playLiftDownEffect(hoverHeight);
+                hoverEffect = false;
+                isHovered = false;
             }
+            hoverDuration--;
         }
-
 
     }
 
@@ -144,5 +151,13 @@ public class GameObject {
         whooshSound.play();
     }
 
-
+    public BufferedImage loadImage(String path) {
+        BufferedImage image = null;
+        try {
+            image = ImageIO.read(getClass().getResourceAsStream(path));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return image;
+    }
 }
