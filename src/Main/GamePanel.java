@@ -135,7 +135,6 @@ public class GamePanel extends JPanel implements Runnable {
                 return;
             }
             Event e = events.get(0);
-            //e.domino.playLiftUpEffect(30);
             e.domino.playHoverEffect(20, 30);
             sidePanel.getScorePanel().addScore(e.score);
             events.remove(0);

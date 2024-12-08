@@ -32,8 +32,10 @@ public class ShopPanel extends GameObject {
 
     private class shopItemObject extends GameObject {
         Item item;
+        BufferedImage shopItemBackground;
         public shopItemObject(int x, int y, int width, int height) {
             super(x, y, width, height);
+            shopItemBackground = loadImage("/shop/ItemCard.png");
         }
 
         public void draw(Graphics2D g2) {
@@ -41,6 +43,8 @@ public class ShopPanel extends GameObject {
             g2.fillRect(getX(), getY(), getWidth(), getHeight());
         }
     }
+
+
 
     private class Item {
         private String name;

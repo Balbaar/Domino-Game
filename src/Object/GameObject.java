@@ -51,15 +51,10 @@ public class GameObject {
         }
 
         if(viewY < y) {
-            viewY += Math.max(1, (y - viewY) / 5);
+            viewY += Math.max(1, (y - viewY) / 10);
         } else if(viewY > y) {
-            viewY -= Math.max(1, (viewY - y) / 5);
+            viewY -= Math.max(1, (viewY - y) / 10);
         }
-
-        /*
-        * If hoverEffect is true. Lift the object up by calling function playLiftUpEffect once.
-        * Then lift it down by calling function playLiftDownEffect once after the duration of the lift up effect.
-        */
 
         if(hoverEffect) {
             if(hoverDuration > 0 && !isHovered) {
