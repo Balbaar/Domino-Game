@@ -21,9 +21,10 @@ public class SidePanel extends GameObject {
         this.height = screenHeight;
 
         scorePanel = new ScorePanel(tileSize*4, height, tileSize);
-        shopPanel = new ShopPanel(tileSize, tileSize*4, tileSize*4, tileSize*8, tileSize);
+        shopPanel = new ShopPanel(tileSize, tileSize*4, tileSize*4, tileSize*10, tileSize);
     }
 
+    @Override
     public void draw(Graphics2D g2) {
         // RGB 51, 57, 65, 255
         //Draw background for sidepanel
@@ -35,8 +36,11 @@ public class SidePanel extends GameObject {
         shopPanel.draw(g2);
     }
 
+    @Override
     public void update() {
+        super.update();
         scorePanel.update();
+        shopPanel.update();
     }
 
     public ScorePanel getScorePanel() {

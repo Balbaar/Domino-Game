@@ -38,6 +38,8 @@ public class SoundPlayer {
     public void play() {
         if (clip != null) {
             clip.setFramePosition(0); // Rewind to the beginning
+            //Lower the volume by 10 decibels.
+            volumeControl.setValue(-20.0f);
             clip.start();
         }
     }

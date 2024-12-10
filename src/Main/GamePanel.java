@@ -43,7 +43,8 @@ public class GamePanel extends JPanel implements Runnable {
         this.setBackground(Color.black);
         this.setDoubleBuffered(true);
 
-        tileSize = (int) screenSize.getWidth() / 1080 * 48;
+        //tileSize = (int) screenSize.getWidth() / 1080 * 48;
+        tileSize = (int) screenSize.getWidth() / 28;
 
         try {
             background = ImageIO.read(getClass().getResourceAsStream("/backgrounds/blue-preview.png"));
