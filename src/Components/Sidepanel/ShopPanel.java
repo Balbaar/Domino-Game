@@ -79,11 +79,14 @@ public class ShopPanel extends GameObject {
             super(x, y, width, height);
             shopItemBackground = loadImage("/shop/ItemCard.png");
             //itemImage = loadImage("/shop/" + item.name + ".png");
+            itemImage = loadImage("/items/" + "cash" + ".png");
+
         }
 
         public void draw(Graphics2D g2) {
             g2.setColor(Color.white);
             g2.drawImage(shopItemBackground, getX(), getY(), getWidth(), getHeight(), null);
+            g2.drawImage(itemImage, getX() + getWidth()/20, getY() + getHeight()/12, getWidth() / 4, getHeight() / 2, null);
         }
     }
 
